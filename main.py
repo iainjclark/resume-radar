@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 import re
 import json
 
+from decorate_pdf import decorate_pdf  # Import the decorate_pdf function
+
 # Load environment variables from .env if it exists
 load_dotenv()
 
@@ -105,7 +107,7 @@ def parse_llm_feedback(raw_feedback: str) -> list[dict]:
     except json.JSONDecodeError:
         print("⚠️ Could not parse feedback as JSON. Raw output returned.")
         return [{"raw_feedback": raw_feedback}]
-    
+
 def main():
     print("🚀 resume-radar is alive!")
 
@@ -125,6 +127,10 @@ def main():
             print(r)
     else:
         print(f"⚠️ PDF not found: {pdf_path}. Please check your inputs folder.")
+
+    # After collecting & parsing results:
+    decorate_pdf(results)
+
 
 
 if __name__ == "__main__":
