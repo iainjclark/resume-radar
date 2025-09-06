@@ -16,13 +16,28 @@ This project uses the [OpenAI Python client](https://github.com/openai/openai-py
 For security, the API key is stored in a local `.env` file that is **not** committed to git.
 
 1. Install dependencies:
+   ```bash
    pip install -r requirements.txt
+   ```
 
 2. Create a .env file in the project root:
-
-OPENAI_API_KEY=sk-your-real-key
+   ```env
+   OPENAI_API_KEY=sk-your-real-key
+   ```
 
 3. Run the app:
+   ```bash
+   python main.py inputs/JohnDoe.pdf
+   ```
 
-python main.py inputs/CV_JohnDoe.pdf
+---
 
+## 📄 PDF Extraction
+
+By default, **resume-radar** uses [PyMuPDF (`fitz`)](https://pymupdf.readthedocs.io/) for PDF text extraction, which usually produces cleaner results than [PyPDF2](https://pypi.org/project/pypdf2/).  
+
+You can switch methods in `main.py`:  
+```python
+sample_text = extract_text_from_pdf(pdf_path, method="pypdf2")   # fallback
+sample_text = extract_text_from_pdf(pdf_path, method="pymupdf")  # default
+```

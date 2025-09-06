@@ -1,4 +1,5 @@
 pypdf2
+pymupdf
 python-dotenv
 openai
 reportlab
