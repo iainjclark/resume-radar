@@ -10,3 +10,7 @@ __pycache__/
 
 # VSCode
 .vscode/
+
+# OpenAI API key
+.env
+

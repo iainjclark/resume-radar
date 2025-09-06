@@ -9,3 +9,20 @@ Weekend solo hackathon project → AI that reviews & decorates your CV.
 - LLM-authored hover tips  
 - Heatmap highlights of strengths & weaknesses  
 - PDF in → PDF out 
+
+## 🔑 Setup API Key
+
+This project uses the [OpenAI Python client](https://github.com/openai/openai-python).  
+For security, the API key is stored in a local `.env` file that is **not** committed to git.
+
+1. Install dependencies:
+   pip install -r requirements.txt
+
+2. Create a .env file in the project root:
+
+OPENAI_API_KEY=sk-your-real-key
+
+3. Run the app:
+
+python main.py inputs/CV_JohnDoe.pdf
+
