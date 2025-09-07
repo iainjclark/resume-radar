@@ -121,6 +121,11 @@ resume-radar started as a rapid proof-of-concept, but there are plenty of ways i
 - **Heatmap** → add a color scale from bright red → orange → yellow → neutral → light green → bright green.  
   Originally planned but pressed for time; relatively straightforward to implement. Details details.
 
+## AI Disclosure Notes  
+
+This project was accelerated with the support of AI coding tools (GitHub Copilot and ChatGPT).  
+The architecture, design philosophy, and final validation were directed by me and I claim ownership of those elements.
+
 ## 🤝 Connect 
   
 <a href="https://www.linkedin.com/in/iainjclark/" target="_blank">
