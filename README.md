@@ -25,6 +25,18 @@ This is Robin's CV. Watch how LLM-generated, data-driven insights emerge dynamic
 👉 Want to see the insights?  
 [Download a sample interactive annotated CV (PDF)](assets/CV_RobinDoe_reviewed.pdf) 
 
+## 📝 Case Study
+
+Ran this on my *own* CV — it flagged some areas to improve, and some that it still wants me to improve!  
+
+<p align="center">
+  <img src="assets/CV_before.jpg" alt="Blurred CV Before" width="45%" style="border:1px solid black;"/>
+  <img src="assets/CV_after.jpg" alt="Blurred CV After" width="45%" style="border:1px solid black;"/>
+</p>
+
+Potential clients and recruiters: feel free to ask to see the before/after copy. Delighted to share!  
+*(Always looking to take on great new clients.)*
+
 ## 🧩 Design Philosophy
 
 resume-radar takes a **three-pass review approach**, inspired by how a human would read a CV:
