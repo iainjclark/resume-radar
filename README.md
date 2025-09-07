@@ -49,6 +49,26 @@ This layered method ensures that the increasingly granular feedback (step 2, the
 
 Code elements for these 3 steps: **global_llm_reflection.py** | **sectional_llm_critique.py** | **granular_llm_critique.py**
 
+## 🧩 Prompt Engineering
+
+resume-radar relies on carefully structured LLM prompts, all in [`llm_prompts.py`](llm_prompts.py), a precis of which can be shown here:
+
+- **Global pass** 🌍  
+  ```txt
+  You are a professional CV reviewer. Read the CV in full and provide a JSON object with these fields...
+  ```
+
+- **Section level pass** 🌍  
+  ```txt
+  You are a CV reviewer. Rate this section of a CV out of 20....
+  ```
+
+- **Granular pass** 🌍  
+  ```txt
+  You are a CV reviewer. Analyze the following CV element in detail. For each key sentence or phrase, provide: ...
+  ```
+
+
 ## 📄 PDF Extraction
 
 By default, **resume-radar** uses [PyMuPDF (`fitz`)](https://pymupdf.readthedocs.io/) for PDF text extraction, which usually produces cleaner results than [PyPDF2](https://pypi.org/project/pypdf2/).  

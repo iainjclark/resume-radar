@@ -24,7 +24,7 @@ Return ONLY JSON with keys: snippet, rating, tag, feedback.
 """
 
 # Granular (line-by-line / snippet-level) critique
-GRANULAR_CRITIQUE_PROMPT = """You are a CV reviewer. Analyze the following CV section in detail.
+GRANULAR_CRITIQUE_PROMPT = """You are a CV reviewer. Analyze the following CV element in detail.
 
 For each key sentence or phrase, provide:
 - snippet: the exact phrase (as in text)
