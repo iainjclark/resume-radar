@@ -22,6 +22,11 @@ This is Robin's CV. Watch how LLM-generated, data-driven insights emerge dynamic
   <img src="assets/CV_transition.gif" alt="CV Transition Demo" width="66%" style="border:1px solid black;">
 </p>
 
+<p align="center">
+  <img src="assets/CV_review_animation.gif" alt="CV Transition Demo" width="66%" style="border:1px solid black;">
+</p>
+
+
 👉 Want to see the insights?  
 [Download a sample interactive annotated CV (PDF)](assets/CV_RobinDoe_reviewed.pdf) 
 
