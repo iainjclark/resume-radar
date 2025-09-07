@@ -14,6 +14,17 @@ Built from scratch in a weekend, accelerated with ChatGPT and GitHub Copilot.
 - Traffic-light comments highlight the document's strengths & weaknesses  
 - PDF in → PDF out → shake it all about 
 
+## 🎥 Demo  
+
+This is Robin's CV. Watch how LLM-generated, data-driven insights emerge dynamically.
+
+<p align="center">
+  <img src="assets/CV_transition.gif" alt="CV Transition Demo" width="66%" style="border:1px solid black;">
+</p>
+
+👉 Want to see it live?  
+[View a sample interactive annotated CV (PDF)](assets/CV_RobinDoe_reviewed.pdf) 
+
 ## 🧩 Design Philosophy
 
 resume-radar takes a **three-pass review approach**, inspired by how a human would read a CV:
