@@ -7,8 +7,8 @@
 
 Weekend solo hackathon project → AI that reviews & decorates your CV.  
 - LLM-authored hover tips  
-- Heatmap highlights of strengths & weaknesses  
-- PDF in → PDF out 
+- Traffic-lights or heatmap highlights the document's strengths & weaknesses  
+- PDF in → PDF out → shake it all about 
 
 ## 🔑 Setup API Key
 
