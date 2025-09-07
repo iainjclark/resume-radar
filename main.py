@@ -1,8 +1,17 @@
-import sys
-from pathlib import Path
-import PyPDF2
-import fitz  # PyMuPDF
+import sys, io, contextlib
 import os
+os.environ["MUPDF_LOG_LEVEL"] = "0"  # attempt to silence MuPDF logs 
+
+# PDF libraries
+
+# ⚠️ ISSUE: Highlight annotations ignore custom fill colors in most PDF readers.
+# This prints non-fatal warnings "Warning: fill color ignored for annot type 'Highlight'." 
+# TODO: find a workaround or alternative annotation type.
+import fitz  # PyMuPDF
+
+import PyPDF2
+
+from pathlib import Path
 from openai import OpenAI
 from dotenv import load_dotenv
 import re
@@ -108,30 +117,74 @@ def parse_llm_feedback(raw_feedback: str) -> list[dict]:
         print("⚠️ Could not parse feedback as JSON. Raw output returned.")
         return [{"raw_feedback": raw_feedback}]
 
-def main():
-    print("🚀 resume-radar is alive!")
+# Example: replace this with actual JSON from your pipeline
+sample_feedback = [
+    {"snippet": "Professional Summary", "rating": 18, "tag": "[GOOD]", "feedback": "Strong summary, compelling intro."},
+    {"snippet": "Professional Experience", "rating": 17, "tag": "[GOOD]", "feedback": "Achievements clearly demonstrated."},
+    {"snippet": "Education", "rating": 12, "tag": "", "feedback": "Could include coursework or honors."},
+    {"snippet": "Core Competencies", "rating": 15, "tag": "", "feedback": "Relevant but could be more specific."},
+    {"snippet": "Leadership & Affiliations", "rating": 14, "tag": "", "feedback": "Shows engagement, more detail helpful."},
+    {"snippet": "References", "rating": 6, "tag": "[BAD]", "feedback": "Unconventional, should list professional references."}
+]
 
-    # Default to inputs/JohnDoe.pdf unless another path is provided
-    pdf_path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("inputs/CV_JohnDoe.pdf")
 
-    if pdf_path.exists():
-        text = extract_text_from_pdf(pdf_path)
-        text = clean_text(text)
-        chunks = chunk_text(text)
-        results = [] 
-        for c in chunks:
-            raw = query_llm(c)
-            parsed = parse_llm_feedback(raw["feedback"])
-            results.extend(parsed)        
-        for r in results:
-            print(r)
-    else:
-        print(f"⚠️ PDF not found: {pdf_path}. Please check your inputs folder.")
+# Map tags to colors (RGB format, 0–1 range)
+TAG_COLORS = {
+    "[GOOD]": (0.6, 0.9, 0.6),    # green
+    "[CAUTION]": (1.0, 1.0, 0.6), # yellow
+    "[BAD]": (1.0, 0.6, 0.6),     # red
+    "": (0.9, 0.9, 0.9)           # grey/neutral
+}
 
-    # After collecting & parsing results:
-    decorate_pdf(results)
 
+def overlay_pdf(input_path: Path, output_path: Path, feedback: list):
+    """Overlay feedback onto the original PDF as highlights and annotations."""
+    doc = fitz.open(input_path)
+
+    for fb in feedback:
+        snippet = fb["snippet"]
+        tag = fb.get("tag", "")
+        feedback_text = fb.get("feedback", "")
+        rating = fb.get("rating", "?")
+
+        color = TAG_COLORS.get(tag, (0.9, 0.9, 0.9))
+
+        for page_num, page in enumerate(doc):
+            rects = page.search_for(snippet)
+            if rects:
+                for rect in rects:
+                    # Highlight the snippet
+                    highlight = page.add_highlight_annot(rect)
+                    with contextlib.redirect_stderr(io.StringIO()):  # try to suppress warnings - TODO: get this working
+                        highlight.set_colors(stroke=color, fill=color)
+                        highlight.update()
+
+                    # Tooltip popup
+                    highlight.set_popup(rect)
+                    highlight.set_info(
+                        title="resume-radar",
+                        content=f"{tag} ({rating}/20): {feedback_text}"
+                    )
+
+                    # Radar ⌖ marker
+                    page.insert_text(
+                        (rect.x0, rect.y1 + 10),
+                        "⌖",
+                        fontsize=12,
+                        color=(0, 0, 0)
+                    )
+
+                print(f"✅ Annotated '{snippet}' on page {page_num+1}")
+                break
+        else:
+            print(f"⚠️ Snippet not found in PDF: {snippet}")
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    doc.save(str(output_path))
+    print(f"📄 Annotated PDF saved to {output_path}")
 
 
 if __name__ == "__main__":
+    overlay_pdf(Path("inputs/CV_JohnDoe.pdf"), Path("outputs/CV_JohnDoe_radar.pdf"), sample_feedback)
+    exit()
     main()
