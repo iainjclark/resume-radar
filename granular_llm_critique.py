@@ -4,6 +4,7 @@ from openai import OpenAI
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+from llm_prompts import GRANULAR_CRITIQUE_PROMPT
 
 def granular_feedback(sections: dict) -> list:
     """
@@ -13,24 +14,11 @@ def granular_feedback(sections: dict) -> list:
     all_feedback = []
 
     for header, content in sections.items():
-        prompt = f"""
-You are a CV reviewer. Analyze the following CV section in detail.
+        prompt = f"""{GRANULAR_CRITIQUE_PROMPT}
 
-For each key sentence or phrase, provide:
-- snippet: the exact phrase (as in text)
-- rating: an integer out of 20
-- tag: [GOOD] if rating >= 16, [BAD] if rating <= 6, [CAUTION] if 7–10, else ""
-- feedback: short constructive comment
-
-Output ONLY valid JSON list, e.g.:
-[
-  {{"snippet": "phrase here", "rating": 18, "tag": "[GOOD]", "feedback": "why it's good"}},
-  {{"snippet": "another phrase", "rating": 7, "tag": "[CAUTION]", "feedback": "needs improvement"}}
-]
-
-Section Header: {header}
-Section Content:
-{content}
+        Section Header: {header}
+        Section Content:
+        {content}
 """
 
         try:

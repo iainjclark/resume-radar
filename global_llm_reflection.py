@@ -4,6 +4,8 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import os
 
+from llm_prompts import GLOBAL_REFLECTION_PROMPT
+
 # Load environment variables (API key)
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -14,12 +16,7 @@ def global_llm_reflection(cv_text: str, scale: int = 20):
     Returns structured JSON with rating, strengths, weaknesses, and feedback.
     """
     prompt = f"""
-    You are a professional CV reviewer.
-    Read the CV in full and provide a JSON object with these fields:
-    - rating: integer out of {scale}
-    - strengths: list of 3 concise bullet points
-    - weaknesses: list of 3 concise bullet points
-    - feedback: a short paragraph of overall impressions
+    {GLOBAL_REFLECTION_PROMPT}
 
     CV:
     {cv_text}

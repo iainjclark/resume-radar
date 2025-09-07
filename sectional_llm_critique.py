@@ -4,6 +4,7 @@ from openai import OpenAI
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+from llm_prompts import SECTION_CRITIQUE_PROMPT
 
 def section_feedback(sections: dict) -> list:
     """
@@ -13,20 +14,12 @@ def section_feedback(sections: dict) -> list:
     feedback = []
 
     for header, content in sections.items():
-        prompt = f"""
-You are a CV reviewer. Rate this section of a CV out of 20.
-Rules:
-- If score >= 16 → tag = [GOOD]
-- If score <= 6 → tag = [BAD]
-- If 7 <= score <= 10 → tag = [CAUTION]
-- Else tag = ""
+        prompt = f"""{SECTION_CRITIQUE_PROMPT}
 
-Return ONLY JSON with keys: snippet, rating, tag, feedback.
-
-Section Header: {header}
-Section Content:
-{content}
-"""
+        Section Header: {header}
+        Section Content:
+        {content}
+        """
 
         try:
             response = client.chat.completions.create(
