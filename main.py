@@ -1,4 +1,4 @@
-import sys, io, contextlib
+import io, contextlib
 import os
 os.environ["MUPDF_LOG_LEVEL"] = "0"  # attempt to silence MuPDF logs 
 
@@ -17,16 +17,16 @@ from dotenv import load_dotenv
 import re
 import json
 
-#from decorate_pdf import decorate_pdf  
 from extract_pdf import extract_text_from_pdf
 from parse_cv import split_into_sections_dynamic
 from global_llm_reflection import global_llm_reflection
 from sectional_llm_critique import section_feedback
+from granular_llm_critique import granular_feedback
 from overlay_pdf import overlay_pdf
 
 # Input / output paths
-INPUT_PDF = Path("inputs/CV_JohnDoe.pdf")
-OUTPUT_PDF = Path("outputs/CV_JohnDoe_radar.pdf")
+INPUT_PDF = Path("inputs/CV_RobinDoe.pdf")
+OUTPUT_PDF = Path("outputs/CV_RobinDoe_reviewed.pdf")
 
 # Load environment variables from .env if it exists
 load_dotenv()
@@ -126,17 +126,6 @@ def parse_llm_feedback(raw_feedback: str) -> list[dict]:
         print("⚠️ Could not parse feedback as JSON. Raw output returned.")
         return [{"raw_feedback": raw_feedback}]
 
-# Example: replace this with actual JSON from your pipeline
-sample_feedback = [
-    {"snippet": "Professional Summary", "rating": 18, "tag": "[GOOD]", "feedback": "Strong summary, compelling intro."},
-    {"snippet": "Professional Experience", "rating": 17, "tag": "[GOOD]", "feedback": "Achievements clearly demonstrated."},
-    {"snippet": "Education", "rating": 12, "tag": "", "feedback": "Could include coursework or honors."},
-    {"snippet": "Core Competencies", "rating": 15, "tag": "", "feedback": "Relevant but could be more specific."},
-    {"snippet": "Leadership & Affiliations", "rating": 14, "tag": "", "feedback": "Shows engagement, more detail helpful."},
-    {"snippet": "References", "rating": 6, "tag": "[BAD]", "feedback": "Unconventional, should list professional references."}
-]
-
-
 # Map tags to colors (RGB format, 0–1 range)
 TAG_COLORS = {
     "[GOOD]": (0.6, 0.9, 0.6),    # green
@@ -144,53 +133,6 @@ TAG_COLORS = {
     "[BAD]": (1.0, 0.6, 0.6),     # red
     "": (0.9, 0.9, 0.9)           # grey/neutral
 }
-
-
-def overlay_pdf(input_path: Path, output_path: Path, feedback: list):
-    """Overlay feedback onto the original PDF as highlights and annotations."""
-    doc = fitz.open(input_path)
-
-    for fb in feedback:
-        snippet = fb["snippet"]
-        tag = fb.get("tag", "")
-        feedback_text = fb.get("feedback", "")
-        rating = fb.get("rating", "?")
-
-        color = TAG_COLORS.get(tag, (0.9, 0.9, 0.9))
-
-        for page_num, page in enumerate(doc):
-            rects = page.search_for(snippet)
-            if rects:
-                for rect in rects:
-                    # Highlight the snippet
-                    highlight = page.add_highlight_annot(rect)
-                    with contextlib.redirect_stderr(io.StringIO()):  # try to suppress warnings - TODO: get this working
-                        highlight.set_colors(stroke=color, fill=color)
-                        highlight.update()
-
-                    # Tooltip popup
-                    highlight.set_popup(rect)
-                    highlight.set_info(
-                        title="resume-radar",
-                        content=f"{tag} ({rating}/20): {feedback_text}"
-                    )
-
-                    # Radar ⌖ marker
-                    page.insert_text(
-                        (rect.x0, rect.y1 + 10),
-                        "⌖",
-                        fontsize=12,
-                        color=(0, 0, 0)
-                    )
-
-                print(f"✅ Annotated '{snippet}' on page {page_num+1}")
-                break
-        else:
-            print(f"⚠️ Snippet not found in PDF: {snippet}")
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    doc.save(str(output_path))
-    print(f"📄 Annotated PDF saved to {output_path}")
 
 def main():
     print("⌖ resume-radar: starting full pipeline")
@@ -208,15 +150,25 @@ def main():
     # 3. Split into sections
     sections = split_into_sections_dynamic(cv_text)
 
-    # 4. Per-section feedback
-    feedback = section_feedback(sections)
+    # 4. Per-section feedback (mark them as "section")
+    section_results = section_feedback(sections)
+    for fb in section_results:
+        fb["level"] = "section"
 
-    print("\n--- Section Feedback ---")
-    for fb in feedback:
-        print(fb)
+    # 5. Granular feedback (mark them as "granular")
+    granular_results = granular_feedback(sections)
+    for fb in granular_results:
+        fb["level"] = "granular"
 
-    # 5. Overlay PDF with annotations
-    overlay_pdf(INPUT_PDF, OUTPUT_PDF, feedback)
+    # 6. Collate for overlay:
+    section_feedback_list = [fb for fb in section_results if fb.get("tag")]
+#    granular_feedback_list = [fb for fb in granular_results if fb.get("tag")]
+
+    # 7. Only keep valid dicts with snippets
+#    annotated_feedback = [fb for fb in annotated_feedback if isinstance(fb, dict) and "snippet" in fb]
+
+    # 8. Overlay PDF with annotations
+    overlay_pdf(INPUT_PDF, OUTPUT_PDF, section_feedback_list, granular_results)
     print(f"\n📄 Pipeline complete: annotated CV written to {OUTPUT_PDF}")
 
 if __name__ == "__main__":
