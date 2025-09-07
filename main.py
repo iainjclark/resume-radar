@@ -17,7 +17,16 @@ from dotenv import load_dotenv
 import re
 import json
 
-from decorate_pdf import decorate_pdf  # Import the decorate_pdf function
+#from decorate_pdf import decorate_pdf  
+from extract_pdf import extract_text_from_pdf
+from parse_cv import split_into_sections_dynamic
+from global_llm_reflection import global_llm_reflection
+from sectional_llm_critique import section_feedback
+from overlay_pdf import overlay_pdf
+
+# Input / output paths
+INPUT_PDF = Path("inputs/CV_JohnDoe.pdf")
+OUTPUT_PDF = Path("outputs/CV_JohnDoe_radar.pdf")
 
 # Load environment variables from .env if it exists
 load_dotenv()
@@ -183,8 +192,32 @@ def overlay_pdf(input_path: Path, output_path: Path, feedback: list):
     doc.save(str(output_path))
     print(f"📄 Annotated PDF saved to {output_path}")
 
+def main():
+    print("⌖ resume-radar: starting full pipeline")
+
+    # 1. Extract text
+    cv_text = extract_text_from_pdf(INPUT_PDF)
+    print("\n--- Extracted CV Text ---")
+    print(cv_text[:500], "...\n")  # preview only
+
+    # 2. Global reflection
+    reflection = global_llm_reflection(cv_text)
+    print("\n--- Global Reflection ---")
+    print(json.dumps(reflection, indent=2))
+
+    # 3. Split into sections
+    sections = split_into_sections_dynamic(cv_text)
+
+    # 4. Per-section feedback
+    feedback = section_feedback(sections)
+
+    print("\n--- Section Feedback ---")
+    for fb in feedback:
+        print(fb)
+
+    # 5. Overlay PDF with annotations
+    overlay_pdf(INPUT_PDF, OUTPUT_PDF, feedback)
+    print(f"\n📄 Pipeline complete: annotated CV written to {OUTPUT_PDF}")
 
 if __name__ == "__main__":
-    overlay_pdf(Path("inputs/CV_JohnDoe.pdf"), Path("outputs/CV_JohnDoe_radar.pdf"), sample_feedback)
-    exit()
     main()

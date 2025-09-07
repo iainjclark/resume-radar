@@ -6,7 +6,9 @@
 ![Tests](https://github.com/iainjclark/resume-radar/actions/workflows/tests.yml/badge.svg)
 ![Built with ❤️🤖](https://img.shields.io/badge/built%20with-%E2%9D%A4%EF%B8%8F%20%2B%20%F0%9F%A4%96-red)
 
-Weekend solo hackathon project → AI that reviews & decorates your CV.  
+Independently developed proof-of-concept → AI that reviews & decorates your CV.
+
+Built from scratch in a weekend, accelerated with ChatGPT and GitHub Copilot.
 - LLM-authored hover tips  
 - Traffic-lights or heatmap highlights the document's strengths & weaknesses  
 - PDF in → PDF out → shake it all about 
