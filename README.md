@@ -22,8 +22,8 @@ This is Robin's CV. Watch how LLM-generated, data-driven insights emerge dynamic
   <img src="assets/CV_transition.gif" alt="CV Transition Demo" width="66%" style="border:1px solid black;">
 </p>
 
-👉 Want to see it live?  
-[View a sample interactive annotated CV (PDF)](assets/CV_RobinDoe_reviewed.pdf) 
+👉 Want to see the insights?  
+[Download a sample interactive annotated CV (PDF)](assets/CV_RobinDoe_reviewed.pdf) 
 
 ## 🧩 Design Philosophy
 
@@ -67,11 +67,10 @@ sample_text = extract_text_from_pdf(pdf_path, method="pymupdf")  # default
 > This project uses the [OpenAI Python client](https://github.com/openai/openai-python) and will need you to provide your OpenAI key -- see .env.example for guidance. For security, the API key is stored in a local `.env` file that is **never** committed to git.
 > Need help? Follow [OpenAI’s guide to creating an API key](https://platform.openai.com/docs/quickstart/step-2-set-up-your-api-key).
 
-
-
 4. Run the app:
    ```bash
-   python main.py inputs/CV_JohnDoe.pdf
+   python main.py inputs/CV_RobinDoe.pdf
+   python main.py inputs/CV_RobinDoe.pdf -o outputs/RobinDoe_re-reviewed.pdf
    ```
 
 ## 🚀 Future Work / Roadmap
@@ -79,6 +78,7 @@ sample_text = extract_text_from_pdf(pdf_path, method="pymupdf")  # default
 resume-radar started as a rapid proof-of-concept, but there are plenty of ways it could grow:
 - **.docx support** → extend beyond PDFs to handle Microsoft Word resumes. This will be trickier because .docx parsing and re-injecting of annotations is a bit of a nightmare (PDFs were bad enough!)
 - **Recruiter vs hiring manager mode change 🔍** → modify the LLM prompt to adopt a different 'lens' for the review (easy)
+- **Abstractify the LLM backend** → support LLMs other than ChatGPT (OpenAI).
 - **Dashboard / UI** → simple visual interface for uploading and annotating resumes - drag & drop, ideally.  
 - **Live demo** → Streamlit? HF Space? Idea being that anyone could try this out without cloning the repo.
 - **Heatmap** → add a color scale from bright red → orange → yellow → neutral → light green → bright green.  

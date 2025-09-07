@@ -40,12 +40,16 @@ Section Content:
 
             fb = response.choices[0].message.content
             fb_parsed = json.loads(fb)
+
+            # Force snippet to just be the section header
+            fb_parsed["snippet"] = header.strip().split("\n")[0]
+
             feedback.append(fb_parsed)
 
         except Exception as e:
             print(f"⚠️ Error processing section {header}: {e}")
             feedback.append({
-                "snippet": header,
+                "snippet": header.strip().split("\n")[0],  # ensure we still use header
                 "rating": "?",
                 "tag": "",
                 "feedback": f"LLM output could not be parsed. Error: {e}"

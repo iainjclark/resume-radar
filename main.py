@@ -24,9 +24,7 @@ from sectional_llm_critique import section_feedback
 from granular_llm_critique import granular_feedback
 from overlay_pdf import overlay_pdf
 
-# Input / output paths
-INPUT_PDF = Path("inputs/CV_RobinDoe.pdf")
-OUTPUT_PDF = Path("outputs/CV_RobinDoe_reviewed.pdf")
+import argparse
 
 # Load environment variables from .env if it exists
 load_dotenv()
@@ -135,10 +133,23 @@ TAG_COLORS = {
 }
 
 def main():
+    parser = argparse.ArgumentParser(description="Resume-Radar: CV reviewer & decorator")
+    parser.add_argument("input_pdf", type=Path, help="Path to input CV PDF")
+    parser.add_argument(
+        "-o", "--output",
+        type=Path,
+        default=None,
+        help="Path to save annotated PDF (default: outputs/<input_basename>_reviewed.pdf)"
+    )
+    args = parser.parse_args()
+
+    input_pdf = args.input_pdf
+    output_pdf = args.output or Path("outputs") / f"{input_pdf.stem}_reviewed.pdf"
+
     print("⌖ resume-radar: starting full pipeline")
 
     # 1. Extract text
-    cv_text = extract_text_from_pdf(INPUT_PDF)
+    cv_text = extract_text_from_pdf(input_pdf)
     print("\n--- Extracted CV Text ---")
     print(cv_text[:500], "...\n")  # preview only
 
@@ -168,8 +179,8 @@ def main():
 #    annotated_feedback = [fb for fb in annotated_feedback if isinstance(fb, dict) and "snippet" in fb]
 
     # 8. Overlay PDF with annotations
-    overlay_pdf(INPUT_PDF, OUTPUT_PDF, section_feedback_list, granular_results)
-    print(f"\n📄 Pipeline complete: annotated CV written to {OUTPUT_PDF}")
+    overlay_pdf(input_pdf, output_pdf, section_feedback_list, granular_results)
+    print(f"\n📄 Pipeline complete: annotated CV written to {output_pdf}")
 
 if __name__ == "__main__":
     main()
