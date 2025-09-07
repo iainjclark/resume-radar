@@ -5,35 +5,26 @@
 ![Status](https://img.shields.io/badge/status-hackathon--MVP-orange)
 ![Tests](https://github.com/iainjclark/resume-radar/actions/workflows/tests.yml/badge.svg)
 ![Built with ❤️🤖](https://img.shields.io/badge/built%20with-%E2%9D%A4%EF%B8%8F%20%2B%20%F0%9F%A4%96-red)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/iainjclark/)
 
 Independently developed proof-of-concept → AI that reviews & decorates your CV.
 
 Built from scratch in a weekend, accelerated with ChatGPT and GitHub Copilot.
 - LLM-authored hover tips  
-- Traffic-lights or heatmap highlights the document's strengths & weaknesses  
+- Traffic-light comments highlight the document's strengths & weaknesses  
 - PDF in → PDF out → shake it all about 
 
-## 🔑 Setup API Key
+## 🧩 Design Philosophy
 
-This project uses the [OpenAI Python client](https://github.com/openai/openai-python).  
-For security, the API key is stored in a local `.env` file that is **not** committed to git.
+resume-radar takes a **three-pass review approach**, inspired by how a human would read a CV:
 
-1. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+1. **Global pass** → read the entire CV for overall impression, with a summary of strengths and weaknesses.  
+2. **Sectional pass** → review each section (e.g. Experience, Education, Skills) in context.  
+3. **Line-by-line pass** → detailed critique of individual lines/chunks, with context from earlier passes.  
 
-2. Create a .env file in the project root:
-   ```env
-   OPENAI_API_KEY=sk-your-real-key
-   ```
+This layered method ensures that the increasingly granular feedback (step 2, then step 3) isn’t just making a superficial review of the  text with little appreciation of its context — it’s informed by the broader narrative of the CV, and this is _by design_.
 
-3. Run the app:
-   ```bash
-   python main.py inputs/JohnDoe.pdf
-   ```
-
----
+Code elements for these 3 steps: **global_llm_reflection.py** | **sectional_llm_critique.py** | **granular_llm_critique.py**
 
 ## 📄 PDF Extraction
 
@@ -44,3 +35,48 @@ You can switch methods in `main.py`:
 sample_text = extract_text_from_pdf(pdf_path, method="pypdf2")   # fallback
 sample_text = extract_text_from_pdf(pdf_path, method="pymupdf")  # default
 ```
+
+## Development Setup
+
+1. Clone and navigate to the repo
+   ```bash
+   git clone https://github.com/iainjclark/resume-radar.git
+   cd resume-radar
+   ```
+
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Create a .env file in the root dir with your API Key 🔑 
+   ```env
+   OPENAI_API_KEY=sk-your-real-key
+   ```
+> This project uses the [OpenAI Python client](https://github.com/openai/openai-python) and will need you to provide your OpenAI key -- see .env.example for guidance. For security, the API key is stored in a local `.env` file that is **never** committed to git.
+> Need help? Follow [OpenAI’s guide to creating an API key](https://platform.openai.com/docs/quickstart/step-2-set-up-your-api-key).
+
+
+
+4. Run the app:
+   ```bash
+   python main.py inputs/CV_JohnDoe.pdf
+   ```
+
+## 🚀 Future Work / Roadmap
+
+resume-radar started as a rapid proof-of-concept, but there are plenty of ways it could grow:
+- **.docx support** → extend beyond PDFs to handle Microsoft Word resumes. This will be trickier because .docx parsing and re-injecting of annotations is a bit of a nightmare (PDFs were bad enough!)
+- **Recruiter vs hiring manager mode change 🔍** → modify the LLM prompt to adopt a different 'lens' for the review (easy)
+- **Dashboard / UI** → simple visual interface for uploading and annotating resumes - drag & drop, ideally.  
+- **Live demo** → Streamlit? HF Space? Idea being that anyone could try this out without cloning the repo.
+- **Heatmap** → add a color scale from bright red → orange → yellow → neutral → light green → bright green.  
+  Originally planned but pressed for time; relatively straightforward to implement. Details details.
+
+## 🤝 Connect 
+  
+<a href="https://www.linkedin.com/in/iainjclark/" target="_blank">
+  <img src="https://img.icons8.com/color/48/000000/linkedin.png" alt="LinkedIn" align="absmiddle"/>
+</a>
+<a href="https://www.linkedin.com/in/iainjclark/">www.linkedin.com/in/iainjclark</a>
+
