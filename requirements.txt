@@ -3,3 +3,4 @@ pymupdf
 python-dotenv
 openai
 reportlab
+pytest   # for running tests
